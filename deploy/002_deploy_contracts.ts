@@ -7,21 +7,32 @@ const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
   const {deployer} = await getNamedAccounts();
 
   const stringsLib = await deployments.get('Strings');
+  const safeMathLib = await deployments.get('SafeMath');
   const quantizedLib = await deployments.get('QuantizedLib');
 
-  const token = await deploy('Quantized', {
+  await deploy('Quantized', {
     from: deployer,
     log: true,
     libraries: {
       Strings: stringsLib.address,
+      SafeMath: safeMathLib.address,
       QuantizedLib: quantizedLib.address,
     },
   });
 
-  await deploy('QuantizedFactory', {
+  await deploy('QuantizedMultiToken', {
     from: deployer,
     log: true,
-    args: [token.address],
+  });
+
+  await deploy('QuantizedERC20Factory', {
+    from: deployer,
+    log: true,
+  });
+
+  await deploy('FeeTracker', {
+    from: deployer,
+    log: true,
   });
 };
 

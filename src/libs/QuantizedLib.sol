@@ -1,12 +1,15 @@
 // SPDX-License-Identifier: MIT
 pragma solidity >=0.7.0;
 
+import "@uniswap/v2-core/contracts/interfaces/IUniswapV2Factory.sol";
 import "@uniswap/v2-periphery/contracts/interfaces/IUniswapV2Router02.sol";
 import "@uniswap/v2-core/contracts/interfaces/IUniswapV2Pair.sol";
-import "@openzeppelin/contracts/token/ERC1155/IERC1155.sol";
-import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
+
+import "../interfaces/IERC20.sol";
+import "../interfaces/IERC1155.sol";
 
 library QuantizedLib {
+    address public constant UNISWAP_FACTORY_ADDRESS = 0x1da48ae241B984C8BA795677616DCc13b93e4d60;
     address public constant UNISWAP_ROUTER_ADDRESS = 0x7a250d5630B4cF539739dF2C5dAcb4c659F2488D;
     uint256 public constant QUANTA_ETH_MULTIPLIER = 1000000;
 
@@ -25,7 +28,7 @@ library QuantizedLib {
             uint256 zbal,
             uint256 tfee,
             uint256 qfee,
-            uint256 atotal
+            uint256 ttotal
         )
     {
         tbal = IERC20(token).balanceOf(sender);
@@ -33,7 +36,16 @@ library QuantizedLib {
         zbal = IERC1155(quantized).balanceOf(sender, uint256(token));
         tfee = amount / feeDivisor;
         qfee = toQuanta(token, tfee);
-        atotal = amount + tfee;
+        ttotal = amount + tfee;
+    }
+
+    function uniswapPoolExists(address token) public view returns (bool poolExists) {
+        poolExists =
+            IUniswapV2Factory(UNISWAP_FACTORY_ADDRESS).getPair(
+                token,
+                IUniswapV2Router02(UNISWAP_ROUTER_ADDRESS).WETH()
+            ) !=
+            address(0);
     }
 
     function toQuanta(address token, uint256 amount) public view returns (uint256 quanta) {

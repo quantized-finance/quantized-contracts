@@ -1,12 +1,16 @@
 // SPDX-License-Identifier: MIT
 pragma solidity >=0.7.0;
 
-import "./IERC20.sol";
-
 interface IQuantizedERC20 {
-    event Approval(address indexed owner, address indexed spender, uint256 value);
+    // Quantized-specific events and functions
 
-    event Transfer(address indexed from, address indexed to, uint256 value);
+    event QuantizedApproval(address indexed owner, address indexed spender, uint256 value);
+
+    event QuantizedTransfer(address indexed from, address indexed to, uint256 value);
+
+    event QuantizedTransferMany(address indexed from, address[] to, uint256[] values);
+
+    event QuantizedTransferBatch(address indexed from, address indexed to, address[] tokens, uint256[] values);
 
     function name() external view returns (string memory);
 
@@ -14,22 +18,22 @@ interface IQuantizedERC20 {
 
     function decimals() external view returns (uint8);
 
-    function totalSupply() external view returns (uint256);
-
-    function allowance(address owner, address spender) external view returns (uint256);
-
-    function balanceOf(address owner) external view returns (uint256);
-
-    function approve(address spender, uint256 value) external returns (bool);
-
-    function transfer(address to, uint256 value) external returns (bool);
-
-    function transferFrom(
+    // enhancement 1 = transfer one token to multiple destinations
+    function transferMany(
         address from,
-        address to,
-        uint256 value
+        address[] memory to,
+        uint256[] memory amounts
     ) external returns (bool);
 
+    // enhancement 2 - transfer multiple tokens to a single destination
+    function transferBatch(
+        address from,
+        address to,
+        uint256[] memory tokens,
+        uint256[] memory amounts
+    ) external;
+
+    // total supply of quantized tokens
     function quantizedSupply() external view returns (uint256);
 
     function initialize(address, address) external;

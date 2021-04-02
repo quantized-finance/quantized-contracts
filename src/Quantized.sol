@@ -1,225 +1,139 @@
 // SPDX-License-Identifier: MIT
 pragma solidity >=0.7.0;
 
-import "@openzeppelin/contracts/token/ERC1155/IERC1155.sol";
-import "@openzeppelin/contracts/token/ERC1155/ERC1155.sol";
-import "@openzeppelin/contracts/token/ERC1155/ERC1155Holder.sol";
-import "@openzeppelin/contracts/utils/Pausable.sol";
-import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
-import "@openzeppelin/contracts/token/ERC20/ERC20.sol";
-import "@openzeppelin/contracts/access/Ownable.sol";
-
-import "./libs/Strings.sol";
+import "./access/Ownable.sol";
+import "./libs/SafeMath.sol";
+import "./interfaces/IQuantized.sol";
+import "./utils/FeeTracker.sol";
+import "./factories/QuantizedERC20Factory.sol";
+import "./tokens/QuantizedMultiToken.sol";
 import "./libs/QuantizedLib.sol";
 
-import "./interfaces/IQuantized.sol";
-import "./interfaces/IQuantizedFactory.sol";
+contract Quantized is Ownable, IQuantized {
+    using SafeMath for uint256;
 
-contract Quantized is ERC1155, ERC1155Holder, Pausable, Ownable, IQuantized {
-    using Strings for string;
+    address private multitoken;
+    address private erc20factory;
+    address private feesTracker;
 
-    address private _factory;
-    address private _quanta;
-    address private _governance;
+    function inithash() public returns (bytes32) {}
 
-    mapping(uint256 => uint256) private totalSupplies;
-    mapping(address => uint256) private feeDivisors;
-
-    /**
-     * @dev Modifier to make a function callable only when the caller is owner or sender
-     *
-     * Requirements:
-     *
-     * - The caller is owner or sender of this token.
-     */
-    modifier ownerSenderOnly(address account) {
-        require(_isOwner(account) || _isSender(account), "Quantized: caller is not owner nor sender");
-        _;
-    }
-
-    /**
-     * @dev Contract initializer.
-     */
-    constructor() ERC1155("https://metadata.quantizer.finance/metadata/") {
-        setApprovalForAll(address(this), true);
-    }
-
-    /**
-     * @dev Returns true if message sender is the given account
-     */
-    function _isSender(address account) internal view returns (bool) {
-        return _msgSender() == account;
-    }
-
-    /**
-     * @dev Returns true if account is owner
-     */
-    function _isOwner(address account) internal view returns (bool) {
-        return owner() == account;
-    }
-
-    /**
-     * @dev Get the total existing supply of quantized tokens for this erc20
-     */
-    function totalSupply(address _addr) external view override returns (uint256) {
-        return totalSupplies[uint256(_addr)];
-    }
-
-    /**
-     * @dev Get the total balance of held for this erc20
-     */
-    function totalBalanceOf(address _addr) public view returns (uint256) {
-        return ERC20(_addr).balanceOf(address(this));
-    }
-
-    function feeDivisor(address token) public view returns (uint256 divisor) {
-        divisor = feeDivisors[token];
-        divisor = divisor == 0 ? QuantizedLib.QUANTA_ETH_MULTIPLIER : divisor;
-    }
-
-    function setFeeDivisor(address token, uint256 _feeDivisor) public onlyOwner returns (uint256 oldDivisor) {
-        require(_feeDivisor != 0, "fee divisor cannot be 0");
-        oldDivisor = feeDivisors[token];
-        feeDivisors[token] = _feeDivisor;
-    }
-
-    function setFactory(address f) public {
-        require(_factory == address(0x0), "Factory is immutable");
-        _factory = f;
-        _quanta = IQuantizedFactory(_factory).createQuantized(address(0x0));
-        _governance = IQuantizedFactory(_factory).createQuantized(address(0x1));
-    }
-
-    function factory() public view returns (address) {
-        return _factory;
-    }
-
-    function quanta() public view returns (address) {
-        return _quanta;
-    }
-
-    function goverenance() public view returns (address) {
-        return _governance;
+    function initialize(
+        address _multitoken,
+        address _erc20factory,
+        address _feesTracker
+    ) public payable {
+        // initializer always passes three valid addresses so checking just one address is sufficient
+        require(multitoken == address(0), "IMMUTABLE");
+        multitoken = _multitoken;
+        erc20factory = _erc20factory;
+        feesTracker = _feesTracker;
     }
 
     /**
      * @dev Quantize this token (turn it into a mapped Quantized token type as well as a CREATE2-deployed ERC20 contract mapped to the token type.)
      */
-    function quantize(address token, uint256 amount) external {
-        (uint256 tbal, , , , uint256 qfee, uint256 atotal) =
-            QuantizedLib.getFeesAndBalances(address(this), _msgSender(), token, feeDivisor(token), amount);
-        require(tbal >= atotal, "Insufficient token balance");
+    function quantize(
+        address token,
+        uint256 amount,
+        bool exactDebit
+    ) external override {
+        require(amount > 0, "ZERO_AMOUNT"); // cannot quantize zero tokens
+        require(token != address(0x0), "ZERO_ADDRESS"); // cannot quantize the sero address
+        require(QuantizedERC20Factory(erc20factory).getQuantizedSource(token) == address(0), "ALREADY_QUANTIZED");
+
+        // get the balances and fees we are gonna need
+        (uint256 tbal, , , , uint256 qfee, uint256 ttotal) =
+            QuantizedLib.getFeesAndBalances(
+                address(this),
+                msg.sender,
+                token,
+                FeeTracker(feesTracker).feeDivisor(token),
+                amount
+            );
+
+        // revert if the sender token balance is insufficient
+        require(tbal >= (exactDebit ? amount : ttotal), "INSUFFICIENT_TOKEN");
+
         // look for the quantized token contract and create it if not there.
         // reward user for having to pay for this tx
-        if (IQuantizedFactory(_factory).getQuantized(token) == address(0x0)) {
-            address quantizedToken = IQuantizedFactory(_factory).createQuantized(token);
-            // calculate a reward for this activity
-            uint256 qreward = qfee * 50;
+        address quantizedToken = QuantizedERC20Factory(erc20factory).getQuantized(token);
+        if (quantizedToken == address(0)) {
+            // revert if there is no Uniswap pool for this token
+            require(QuantizedLib.uniswapPoolExists(token) == true, "NO_UNISWAP_POOL");
+
+            // create the new quantized token contract
+            quantizedToken = QuantizedERC20Factory(erc20factory).createQuantized(
+                address(this),
+                multitoken,
+                uint256(token)
+            );
+
             // mint fee tokens that will pay for dequantizing later
-            _mint(_msgSender(), 0, qreward, "0x0");
-            emit QuantizedTokenGenerated(_msgSender(), quantizedToken, amount, qreward);
+            QuantizedMultiToken(multitoken).mint(msg.sender, address(0), qfee.mul(50));
         }
+
         // mint fee tokens that will pay for dequantizing later
-        _mint(_msgSender(), 0, qfee, "0x0");
+        QuantizedMultiToken(multitoken).mint(msg.sender, address(0), qfee.mul(qfee));
+
         // transfer erc20 tokens to quantizer contract
-        IERC20(token).transferFrom(_msgSender(), address(this), atotal);
+        IERC20(token).transferFrom(msg.sender, address(this), (exactDebit ? tbal : ttotal));
+
         // mint equivalent number of quantized tokens
-        _mint(_msgSender(), uint256(token), amount, "0x0");
+        QuantizedMultiToken(multitoken).mint(msg.sender, token, exactDebit ? amount - tbal : amount);
+
         // emit an event about it
-        emit Quantized(_msgSender(), token, amount, atotal - amount);
+        emit TokenQuantized(msg.sender, token, quantizedToken, exactDebit ? amount - tbal : amount, qfee);
     }
 
     /**
      * @dev Quantize ETH (turn it into quanta)
      */
-    function quantizeEth(uint256 amount) external payable {
-        require(address(this).balance >= amount, "Insufficient ETH balance");
+    receive() external payable {
         // tranfer ETH to contract and mint QUanta
-        address(this).transfer(amount);
-        _mint(_msgSender(), 0, amount * QuantizedLib.QUANTA_ETH_MULTIPLIER, "0x0");
-        emit QuantizedEth(_msgSender(), amount, amount * QuantizedLib.QUANTA_ETH_MULTIPLIER);
+        uint256 quantaToMint = msg.sender.balance.mul(QuantizedLib.QUANTA_ETH_MULTIPLIER);
+        QuantizedMultiToken(multitoken).mint(msg.sender, address(0), quantaToMint);
+        emit EthereumQuantized(msg.sender, msg.sender.balance, quantaToMint);
     }
 
     /**
      * @dev Dequantize this token to erc20.
      */
-    function dequantize(address token, uint256 amount) external {
+    function dequantize(address token, uint256 amount) external override {
+        // cannot dequantize a quantized token so stop them right here
+        require(QuantizedERC20Factory(erc20factory).getQuantizedSource(token) == address(0), "ALEADY_QUANTIZED");
+
+        // get the address of the quantized token
+        address quantizedToken = QuantizedERC20Factory(erc20factory).getQuantized(token);
+
+        // cannot dequantize token that is not quantized
+        require(quantizedToken != address(0), "NOT_QUANTIZED");
+
+        // balance and fee info for token
         (, uint256 qbal, uint256 zbal, , uint256 qfee, ) =
-            QuantizedLib.getFeesAndBalances(address(this), _msgSender(), token, feeDivisor(token), amount);
+            QuantizedLib.getFeesAndBalances(
+                address(this),
+                msg.sender,
+                token,
+                FeeTracker(feesTracker).feeDivisor(token),
+                amount
+            );
+
         // require they have enough of this quantized token to dequantize
         require(zbal >= amount, "Insufficient quantized token balance");
         // require them not to need any additional quanta to satistfy the fee
         require(qbal >= qfee, "Insufficient quanta balance to dequantize token.");
+
         // burn the quantized tokens that are being dequantized
-        _burn(_msgSender(), uint256(token), amount);
-        // burn the Quanta fees
-        _burn(_msgSender(), 0, qfee);
+        QuantizedMultiToken(multitoken).burn(msg.sender, token, amount);
+
+        // burn the Quanta fees paid to dequantize the token
+        QuantizedMultiToken(multitoken).burn(msg.sender, address(0), qfee);
+
         // transfer erc20 token balance to dequantizer address
-        IERC20(token).transferFrom(address(this), _msgSender(), amount);
+        IERC20(token).transferFrom(address(this), msg.sender, amount);
+
         // emit an event about it
-        emit Dequantized(_msgSender(), token, amount, qfee);
-    }
-
-    /**
-     * @dev Dequantize this token to erc20, using ETH to pay for fees
-     */
-    function dequantizeEth(address token, uint256 amount) external payable {
-        (, , uint256 zbal, , uint256 qfee, ) =
-            QuantizedLib.getFeesAndBalances(address(this), _msgSender(), token, feeDivisor(token), amount);
-        address dequantizer = _msgSender();
-        // require they have enough erc1155 token to mint this erc1155
-        require(zbal >= amount, "Insufficient quantized token balance");
-        // get a price quote in ETH of the cost of the Quanta we need to pay fees with
-        (uint256 qneth, , ) = QuantizedLib.ethQuote(_quanta, qfee);
-        // require they have enough ETH needed to pay their fees
-        require(dequantizer.balance > qneth, "Insufficient eth balance to dequantize token.");
-        // convert eth into quanta via uniswap to get the quanta needed to pay fees
-        convertEthToQuanta(qfee);
-        // pay quanta fees by burning quanta token
-        _burn(dequantizer, 0, qfee);
-        // burn the quantized tokenss we are dequantizing
-        _burn(dequantizer, uint256(token), amount);
-        // transfer erc20 back to dequantizer address
-        IERC20(token).transferFrom(address(this), dequantizer, amount);
-        // emit an event about it
-        emit Dequantized(_msgSender(), token, amount, qneth);
-    }
-
-    function convertEthToQuanta(uint256 quantaAmount) public payable {
-        uint256 deadline = block.timestamp + 15; // using 'now' for convenience, for mainnet pass deadline from frontend!
-        QuantizedLib.convertEthToQuanta(_factory, address(this), quantaAmount, deadline);
-    }
-
-    /**
-     * @dev Returns the metadata URI for this token type
-     */
-    function uri(uint256 _id) public view override(ERC1155) returns (string memory) {
-        require(this.totalSupply(address(_id)) != 0, "QuantizedERC20#uri: NONEXISTENT_TOKEN");
-        return Strings.strConcat(ERC1155(this).uri(_id), Strings.uint2str(_id));
-    }
-
-    /**
-     * @dev run every time a token is tranferred
-     */
-    function _beforeTokenTransfer(
-        address,
-        address from,
-        address to,
-        uint256[] memory ids,
-        uint256[] memory amounts,
-        bytes memory
-    ) internal virtual override(ERC1155) {
-        for (uint256 idx = 0; idx < ids.length; idx++) {
-            uint256 id_x = ids[idx];
-            uint256 amount_x = amounts[idx];
-            if (from == address(0x0)) {
-                // inc total supplies for this token type
-                totalSupplies[id_x] = totalSupplies[id_x] + (amount_x);
-            } else if (to == address(0x0)) {
-                if (totalSupplies[id_x] > amount_x) {
-                    totalSupplies[id_x] = totalSupplies[id_x] - (amount_x);
-                }
-            }
-        }
+        emit TokenDequantized(msg.sender, token, quantizedToken, amount, qfee);
     }
 }
