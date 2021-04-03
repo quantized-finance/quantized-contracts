@@ -5,11 +5,12 @@ import "../libs/Strings.sol";
 import "../libs/SafeMath.sol";
 import "./ERC1155Pausable.sol";
 import "./ERC1155Holder.sol";
-import "../access/Ownable.sol";
 import "../interfaces/IQuantizedMultiToken.sol";
 import "../interfaces/IQuantizedMultiToken.sol";
 
-contract QuantizedMultiToken is ERC1155Pausable, ERC1155Holder, IQuantizedMultiToken, Ownable {
+contract QuantizedMultiToken is ERC1155Pausable, ERC1155Holder, IQuantizedMultiToken {
+    address private operator;
+
     using SafeMath for uint256;
     using Strings for string;
 
@@ -21,6 +22,14 @@ contract QuantizedMultiToken is ERC1155Pausable, ERC1155Holder, IQuantizedMultiT
      * @dev Contract initializer.
      */
     constructor() ERC1155("https://metadata.quantized.finance/quantized/") {}
+
+    /**
+     * @dev Set the address allowed to mint and burn
+     */
+    function setOperator(address _operator) external {
+        require(operator == address(0), "IMMUTABLE");
+        operator = _operator;
+    }
 
     /**
      * @dev Returns the metadata URI for this token type
@@ -44,7 +53,8 @@ contract QuantizedMultiToken is ERC1155Pausable, ERC1155Holder, IQuantizedMultiT
         address account,
         address token,
         uint256 amount
-    ) public onlyOwner {
+    ) public {
+        require(msg.sender == operator, "UNAUTHORIZED");
         _mint(account, uint256(token), amount, "0x0");
         _totalBalances[uint256(token)] = _totalBalances[uint256(token)].add(amount);
         emit QuantizedTokenGenerated(account, token, amount);
@@ -57,7 +67,8 @@ contract QuantizedMultiToken is ERC1155Pausable, ERC1155Holder, IQuantizedMultiT
         address account,
         address token,
         uint256 amount
-    ) public onlyOwner {
+    ) public {
+        require(msg.sender == operator, "UNAUTHORIZED");
         _burn(account, uint256(token), amount);
         _totalBalances[uint256(token)] = _totalBalances[uint256(token)].sub(amount);
     }

@@ -2,32 +2,80 @@
 pragma solidity >=0.7.0;
 
 import "./access/Ownable.sol";
+import "./libs/Create2Deployer.sol";
 import "./libs/SafeMath.sol";
 import "./interfaces/IQuantized.sol";
-import "./utils/FeeTracker.sol";
+import "./utils/QuantizedFeeTracker.sol";
 import "./factories/QuantizedERC20Factory.sol";
 import "./tokens/QuantizedMultiToken.sol";
 import "./libs/QuantizedLib.sol";
 
-contract Quantized is Ownable, IQuantized {
+contract Quantized is Ownable, IQuantized, ERC1155Receiver {
     using SafeMath for uint256;
 
     address private multitoken;
+    address private governor;
     address private erc20factory;
     address private feesTracker;
+
+    uint256 version;
 
     function inithash() public returns (bytes32) {}
 
     function initialize(
         address _multitoken,
-        address _erc20factory,
+        address _governor,
+        address _factory,
         address _feesTracker
-    ) public payable {
+    )
+        public
+        payable
+        returns (
+            address,
+            address,
+            address,
+            address,
+            address,
+            address,
+            bool
+        )
+    {
         // initializer always passes three valid addresses so checking just one address is sufficient
-        require(multitoken == address(0), "IMMUTABLE");
+        if (multitoken != address(0))
+            return (
+                multitoken,
+                governor,
+                erc20factory,
+                feesTracker,
+                QuantizedERC20Factory(erc20factory).getQuantized(address(0)),
+                QuantizedERC20Factory(erc20factory).getQuantized(address(1)),
+                false
+            );
+
+        // set all the primary addresses
         multitoken = _multitoken;
-        erc20factory = _erc20factory;
+        governor = _governor;
+        erc20factory = _factory;
         feesTracker = _feesTracker;
+
+        // engrave the operator's name - this contract
+        QuantizedMultiToken(multitoken).setOperator(address(this));
+        QuantizedERC20Factory(erc20factory).setOperator(address(this));
+        QuantizedFeeTracker(feesTracker).setOperator(_governor);
+
+        // create an erc20 facade for the 0 address - this will be
+        // the Quanta token, which will be transactable as an erc20 token
+        address quanta = QuantizedERC20Factory(erc20factory).createQuantized(address(this), multitoken, uint256(0));
+
+        // create an erc20 facade for the 1 address - this will be
+        // the master governance token of the QUantized protocol
+        address governance = QuantizedERC20Factory(erc20factory).createQuantized(address(this), multitoken, uint256(1));
+
+        // mint governance tokens. 50% to contract owner, 50% to primary contract
+        QuantizedMultiToken(multitoken).mint(owner(), address(1), 50000);
+        QuantizedMultiToken(multitoken).mint(address(this), address(1), 50000);
+
+        return (multitoken, governor, erc20factory, feesTracker, quanta, governance, true);
     }
 
     /**
@@ -48,7 +96,7 @@ contract Quantized is Ownable, IQuantized {
                 address(this),
                 msg.sender,
                 token,
-                FeeTracker(feesTracker).feeDivisor(token),
+                QuantizedFeeTracker(feesTracker).feeDivisor(token),
                 amount
             );
 
@@ -70,7 +118,11 @@ contract Quantized is Ownable, IQuantized {
             );
 
             // mint fee tokens that will pay for dequantizing later
-            QuantizedMultiToken(multitoken).mint(msg.sender, address(0), qfee.mul(50));
+            QuantizedMultiToken(multitoken).mint(
+                msg.sender,
+                address(0),
+                qfee.mul(QuantizedFeeTracker(feesTracker).creationMultiplier(token))
+            );
         }
 
         // mint fee tokens that will pay for dequantizing later
@@ -115,7 +167,7 @@ contract Quantized is Ownable, IQuantized {
                 address(this),
                 msg.sender,
                 token,
-                FeeTracker(feesTracker).feeDivisor(token),
+                QuantizedFeeTracker(feesTracker).feeDivisor(token),
                 amount
             );
 
@@ -135,5 +187,28 @@ contract Quantized is Ownable, IQuantized {
 
         // emit an event about it
         emit TokenDequantized(msg.sender, token, quantizedToken, amount, qfee);
+    }
+
+    function onERC1155Received(
+        address,
+        address,
+        uint256,
+        uint256,
+        bytes calldata
+    ) external pure override returns (bytes4) {
+        return bytes4(keccak256("onERC1155Received(address,address,uint256,uint256,bytes)"));
+    }
+
+    /**
+     * @dev called when erc1155 received
+     */
+    function onERC1155BatchReceived(
+        address,
+        address,
+        uint256[] calldata,
+        uint256[] calldata,
+        bytes calldata
+    ) external pure override returns (bytes4) {
+        return bytes4(keccak256("onERC1155BatchReceived(address,address,uint256[],uint256[],bytes)"));
     }
 }

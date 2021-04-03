@@ -36,5 +36,9 @@ interface IQuantizedERC20 {
     // total supply of quantized tokens
     function quantizedSupply() external view returns (uint256);
 
-    function initialize(address, address) external;
+    function initialize(
+        address,
+        address,
+        address
+    ) external;
 }

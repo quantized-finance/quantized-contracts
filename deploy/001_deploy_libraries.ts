@@ -20,6 +20,11 @@ const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
     from: deployer,
     log: true,
   });
+
+  await deploy('Create2Deployer', {
+    from: deployer,
+    log: true,
+  });
 };
 
 func.tags = ['QuantizedLibs'];

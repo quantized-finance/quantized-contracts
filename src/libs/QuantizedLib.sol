@@ -80,7 +80,7 @@ library QuantizedLib {
     }
 
     // calculates the CREATE2 address for the quantized erc20 without making any external calls
-    function quantizedAddressOf(address qfactory, address token0) internal pure returns (address qaddress) {
+    function quantizedAddressOf(address qfactory, address token0) public pure returns (address qaddress) {
         qaddress = address(
             uint256(
                 keccak256(
@@ -88,7 +88,7 @@ library QuantizedLib {
                         hex"ff",
                         qfactory,
                         keccak256(abi.encodePacked(token0)),
-                        hex"96e8ac4277198ff8b6f785478aa9a39f403cb768dd02cbee326c3e7da348845f" // init code hash
+                        hex"cd4902b65e1285dd3266dd5a6212b18ff94b962e082ca6cd0a3c4538738b4a96" // init code hash
                     )
                 )
             )
@@ -100,7 +100,7 @@ library QuantizedLib {
         address factory,
         address tokenA,
         address tokenB
-    ) internal pure returns (address pair) {
+    ) public pure returns (address pair) {
         (address token0, address token1) = sortTokens(tokenA, tokenB);
         pair = address(
             uint256(

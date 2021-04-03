@@ -1,0 +1,47 @@
+{
+  "address": "0x8a6A61FB6ff506c35675f06742316c8928337bE8",
+  "abi": [
+    {
+      "inputs": [],
+      "name": "initialize",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    }
+  ],
+  "transactionHash": "0x20674c073e7fb468e9b8a7de4a27a9fc9cf3c6e60831a3105a1ea1bdbeeb6655",
+  "receipt": {
+    "to": null,
+    "from": "0x80EBffD553601340B688f246FD20a57BAab17AaD",
+    "contractAddress": "0x8a6A61FB6ff506c35675f06742316c8928337bE8",
+    "transactionIndex": 4,
+    "gasUsed": "103095",
+    "logsBloom": "0x00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000",
+    "blockHash": "0x5fe57d61dfd021b05370d4e540b6e25e84f0e3787e1a0122d7a214b8696de064",
+    "transactionHash": "0x20674c073e7fb468e9b8a7de4a27a9fc9cf3c6e60831a3105a1ea1bdbeeb6655",
+    "logs": [],
+    "blockNumber": 24141444,
+    "cumulativeGasUsed": "1384528",
+    "status": 1,
+    "byzantium": true
+  },
+  "args": [],
+  "solcInputHash": "af2f90b4513741b2a801c08c9ed6ab4c",
+  "metadata": "{\"compiler\":{\"version\":\"0.7.3+commit.9bfce1f6\"},\"language\":\"Solidity\",\"output\":{\"abi\":[{\"inputs\":[],\"name\":\"initialize\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"}],\"devdoc\":{\"kind\":\"dev\",\"methods\":{},\"version\":1},\"userdoc\":{\"kind\":\"user\",\"methods\":{},\"version\":1}},\"settings\":{\"compilationTarget\":{\"src/governance/QuantizedGovernor.sol\":\"QuantizedGovernor\"},\"evmVersion\":\"istanbul\",\"libraries\":{},\"metadata\":{\"bytecodeHash\":\"ipfs\",\"useLiteralContent\":true},\"optimizer\":{\"enabled\":true,\"runs\":1},\"remappings\":[]},\"sources\":{\"hardhat-deploy/solc_0.7/proxy/Proxied.sol\":{\"content\":\"// SPDX-License-Identifier: MIT\\npragma solidity ^0.7.0;\\n\\nabstract contract Proxied {\\n    /// @notice to be used by initialisation / postUpgrade function so that only the owner can execute them\\n    /// It also allows these functions to be called inside a contructor when the contract\\n    /// is meant to be used without proxy\\n    modifier proxied() {\\n        address ownerAddress = _owner();\\n        // With hardhat-deploy proxies\\n        // the ownerAddress is zero only for the implementation contract\\n        // if the implementation contract want to be used as standalone\\n        // it simply has to execute the `proxied` function\\n        // This ensure the ownerAddress is never zero post deployment\\n        if (ownerAddress == address(0)) {\\n            // ensure can not be called twice when used outside of proxy : no admin\\n            // solhint-disable-next-line security/no-inline-assembly\\n            assembly {\\n                sstore(\\n                    0xb53127684a568b3173ae13b9f8a6016e243e63b6e8ee1178d6a717850b5d6103,\\n                    0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF\\n                )\\n            }\\n        } else {\\n            require(msg.sender == ownerAddress);\\n        }\\n        _;\\n    }\\n\\n    modifier onlyOwner() {\\n        require(msg.sender == _owner(), \\\"NOT_AUTHORIZED\\\");\\n        _;\\n    }\\n\\n    function _owner() internal view returns (address ownerAddress) {\\n        // solhint-disable-next-line security/no-inline-assembly\\n        assembly {\\n            ownerAddress := sload(0xb53127684a568b3173ae13b9f8a6016e243e63b6e8ee1178d6a717850b5d6103)\\n        }\\n    }\\n}\\n\",\"keccak256\":\"0x3725aa35fb23643a5adc057cb34f4e5c7fba9b223e549f65aa03de4109053693\",\"license\":\"MIT\"},\"src/governance/QuantizedGovernor.sol\":{\"content\":\"// SPDX-License-Identifier: MIT\\npragma solidity >=0.7.0;\\n\\nimport \\\"hardhat-deploy/solc_0.7/proxy/Proxied.sol\\\";\\n\\ncontract QuantizedGovernor is Proxied {\\n    function initialize() public proxied {}\\n}\\n\",\"keccak256\":\"0x08496506148972df4fd4b7aa28e5159ff08226a055151aa1a2f17a149c14c212\",\"license\":\"MIT\"}},\"version\":1}",
+  "bytecode": "0x608060405234801561001057600080fd5b5060e68061001f6000396000f3fe6080604052348015600f57600080fd5b506004361060285760003560e01c80638129fc1c14602d575b600080fd5b60336035565b005b6000603d607e565b90506001600160a01b0381166067576001600160a01b03600080516020609183398151915255607b565b336001600160a01b03821614607b57600080fd5b50565b6000805160206091833981519152549056feb53127684a568b3173ae13b9f8a6016e243e63b6e8ee1178d6a717850b5d6103a2646970667358221220eacad744cba7117c9affebe461ebebe1eec98f26637995a3c635e41f372cd61464736f6c63430007030033",
+  "deployedBytecode": "0x6080604052348015600f57600080fd5b506004361060285760003560e01c80638129fc1c14602d575b600080fd5b60336035565b005b6000603d607e565b90506001600160a01b0381166067576001600160a01b03600080516020609183398151915255607b565b336001600160a01b03821614607b57600080fd5b50565b6000805160206091833981519152549056feb53127684a568b3173ae13b9f8a6016e243e63b6e8ee1178d6a717850b5d6103a2646970667358221220eacad744cba7117c9affebe461ebebe1eec98f26637995a3c635e41f372cd61464736f6c63430007030033",
+  "devdoc": {
+    "kind": "dev",
+    "methods": {},
+    "version": 1
+  },
+  "userdoc": {
+    "kind": "user",
+    "methods": {},
+    "version": 1
+  },
+  "storageLayout": {
+    "storage": [],
+    "types": null
+  }
+}

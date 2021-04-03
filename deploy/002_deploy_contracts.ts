@@ -9,6 +9,7 @@ const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
   const stringsLib = await deployments.get('Strings');
   const safeMathLib = await deployments.get('SafeMath');
   const quantizedLib = await deployments.get('QuantizedLib');
+  const c2Deployer = await deployments.get('Create2Deployer');
 
   await deploy('Quantized', {
     from: deployer,
@@ -17,6 +18,16 @@ const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
       Strings: stringsLib.address,
       SafeMath: safeMathLib.address,
       QuantizedLib: quantizedLib.address,
+      Create2Deployer: c2Deployer.address,
+    },
+  });
+
+  await deploy('QuantizedGovernor', {
+    from: deployer,
+    log: true,
+    proxy: {
+      upgradeIndex: 0,
+      methodName: 'initialize',
     },
   });
 
@@ -30,7 +41,12 @@ const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
     log: true,
   });
 
-  await deploy('FeeTracker', {
+  await deploy('QuantizedERC20', {
+    from: deployer,
+    log: true,
+  });
+
+  await deploy('QuantizedFeeTracker', {
     from: deployer,
     log: true,
   });

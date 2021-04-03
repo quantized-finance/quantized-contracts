@@ -1,0 +1,410 @@
+{
+  "address": "0x7F7F32D5C3aC31810c38500908827a01Ac954653",
+  "abi": [
+    {
+      "inputs": [],
+      "stateMutability": "nonpayable",
+      "type": "constructor"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": true,
+          "internalType": "address",
+          "name": "operator",
+          "type": "address"
+        },
+        {
+          "indexed": true,
+          "internalType": "address",
+          "name": "token",
+          "type": "address"
+        },
+        {
+          "indexed": false,
+          "internalType": "uint256",
+          "name": "oldValue",
+          "type": "uint256"
+        },
+        {
+          "indexed": false,
+          "internalType": "uint256",
+          "name": "value",
+          "type": "uint256"
+        }
+      ],
+      "name": "CreationMultiplierChanged",
+      "type": "event"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": true,
+          "internalType": "address",
+          "name": "operator",
+          "type": "address"
+        },
+        {
+          "indexed": false,
+          "internalType": "uint256",
+          "name": "oldValue",
+          "type": "uint256"
+        },
+        {
+          "indexed": false,
+          "internalType": "uint256",
+          "name": "value",
+          "type": "uint256"
+        }
+      ],
+      "name": "DefaultCreationMultiplierChanged",
+      "type": "event"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": true,
+          "internalType": "address",
+          "name": "operator",
+          "type": "address"
+        },
+        {
+          "indexed": false,
+          "internalType": "uint256",
+          "name": "oldValue",
+          "type": "uint256"
+        },
+        {
+          "indexed": false,
+          "internalType": "uint256",
+          "name": "value",
+          "type": "uint256"
+        }
+      ],
+      "name": "DefaultFeeDivisorChanged",
+      "type": "event"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": true,
+          "internalType": "address",
+          "name": "operator",
+          "type": "address"
+        },
+        {
+          "indexed": true,
+          "internalType": "address",
+          "name": "token",
+          "type": "address"
+        },
+        {
+          "indexed": false,
+          "internalType": "uint256",
+          "name": "oldValue",
+          "type": "uint256"
+        },
+        {
+          "indexed": false,
+          "internalType": "uint256",
+          "name": "value",
+          "type": "uint256"
+        }
+      ],
+      "name": "FeeDivisorChanged",
+      "type": "event"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "token",
+          "type": "address"
+        }
+      ],
+      "name": "creationMultiplier",
+      "outputs": [
+        {
+          "internalType": "uint256",
+          "name": "multiplier",
+          "type": "uint256"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "defaultCreationMultiplier",
+      "outputs": [
+        {
+          "internalType": "uint256",
+          "name": "multiplier",
+          "type": "uint256"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "defaultFeeDivisor",
+      "outputs": [
+        {
+          "internalType": "uint256",
+          "name": "multiplier",
+          "type": "uint256"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "token",
+          "type": "address"
+        }
+      ],
+      "name": "feeDivisor",
+      "outputs": [
+        {
+          "internalType": "uint256",
+          "name": "divisor",
+          "type": "uint256"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "token",
+          "type": "address"
+        },
+        {
+          "internalType": "uint256",
+          "name": "_multiplier",
+          "type": "uint256"
+        }
+      ],
+      "name": "setCreationMultiplier",
+      "outputs": [
+        {
+          "internalType": "uint256",
+          "name": "oldMultiplier",
+          "type": "uint256"
+        }
+      ],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "uint256",
+          "name": "_multiplier",
+          "type": "uint256"
+        }
+      ],
+      "name": "setDefaultCreationMultiplier",
+      "outputs": [
+        {
+          "internalType": "uint256",
+          "name": "oldMultiplier",
+          "type": "uint256"
+        }
+      ],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "uint256",
+          "name": "_feeDivisor",
+          "type": "uint256"
+        }
+      ],
+      "name": "setDefaultFeeDivisor",
+      "outputs": [
+        {
+          "internalType": "uint256",
+          "name": "oldDivisor",
+          "type": "uint256"
+        }
+      ],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "token",
+          "type": "address"
+        },
+        {
+          "internalType": "uint256",
+          "name": "_feeDivisor",
+          "type": "uint256"
+        }
+      ],
+      "name": "setFeeDivisor",
+      "outputs": [
+        {
+          "internalType": "uint256",
+          "name": "oldDivisor",
+          "type": "uint256"
+        }
+      ],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "_operator",
+          "type": "address"
+        }
+      ],
+      "name": "setOperator",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    }
+  ],
+  "transactionHash": "0x7a9c6d3732907b2bba4ea459fc0201dc7f2caae7fc30cd08a7d2caaffb6db54c",
+  "receipt": {
+    "to": null,
+    "from": "0x80EBffD553601340B688f246FD20a57BAab17AaD",
+    "contractAddress": "0x7F7F32D5C3aC31810c38500908827a01Ac954653",
+    "transactionIndex": 0,
+    "gasUsed": "382259",
+    "logsBloom": "0x00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000",
+    "blockHash": "0xe17b43ffb7bdadacf62dc2c9852dfc62a93fb7d89deeac2175b1085e5bf86a7f",
+    "transactionHash": "0x7a9c6d3732907b2bba4ea459fc0201dc7f2caae7fc30cd08a7d2caaffb6db54c",
+    "logs": [],
+    "blockNumber": 24141449,
+    "cumulativeGasUsed": "382259",
+    "status": 1,
+    "byzantium": true
+  },
+  "args": [],
+  "solcInputHash": "39ea6b62d3ccbb1d057e5219143250c2",
+  "metadata": "{\"compiler\":{\"version\":\"0.7.3+commit.9bfce1f6\"},\"language\":\"Solidity\",\"output\":{\"abi\":[{\"inputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"constructor\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":true,\"internalType\":\"address\",\"name\":\"operator\",\"type\":\"address\"},{\"indexed\":true,\"internalType\":\"address\",\"name\":\"token\",\"type\":\"address\"},{\"indexed\":false,\"internalType\":\"uint256\",\"name\":\"oldValue\",\"type\":\"uint256\"},{\"indexed\":false,\"internalType\":\"uint256\",\"name\":\"value\",\"type\":\"uint256\"}],\"name\":\"CreationMultiplierChanged\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":true,\"internalType\":\"address\",\"name\":\"operator\",\"type\":\"address\"},{\"indexed\":false,\"internalType\":\"uint256\",\"name\":\"oldValue\",\"type\":\"uint256\"},{\"indexed\":false,\"internalType\":\"uint256\",\"name\":\"value\",\"type\":\"uint256\"}],\"name\":\"DefaultCreationMultiplierChanged\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":true,\"internalType\":\"address\",\"name\":\"operator\",\"type\":\"address\"},{\"indexed\":false,\"internalType\":\"uint256\",\"name\":\"oldValue\",\"type\":\"uint256\"},{\"indexed\":false,\"internalType\":\"uint256\",\"name\":\"value\",\"type\":\"uint256\"}],\"name\":\"DefaultFeeDivisorChanged\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":true,\"internalType\":\"address\",\"name\":\"operator\",\"type\":\"address\"},{\"indexed\":true,\"internalType\":\"address\",\"name\":\"token\",\"type\":\"address\"},{\"indexed\":false,\"internalType\":\"uint256\",\"name\":\"oldValue\",\"type\":\"uint256\"},{\"indexed\":false,\"internalType\":\"uint256\",\"name\":\"value\",\"type\":\"uint256\"}],\"name\":\"FeeDivisorChanged\",\"type\":\"event\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"token\",\"type\":\"address\"}],\"name\":\"creationMultiplier\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"multiplier\",\"type\":\"uint256\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"defaultCreationMultiplier\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"multiplier\",\"type\":\"uint256\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"defaultFeeDivisor\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"multiplier\",\"type\":\"uint256\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"token\",\"type\":\"address\"}],\"name\":\"feeDivisor\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"divisor\",\"type\":\"uint256\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"token\",\"type\":\"address\"},{\"internalType\":\"uint256\",\"name\":\"_multiplier\",\"type\":\"uint256\"}],\"name\":\"setCreationMultiplier\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"oldMultiplier\",\"type\":\"uint256\"}],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"uint256\",\"name\":\"_multiplier\",\"type\":\"uint256\"}],\"name\":\"setDefaultCreationMultiplier\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"oldMultiplier\",\"type\":\"uint256\"}],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"uint256\",\"name\":\"_feeDivisor\",\"type\":\"uint256\"}],\"name\":\"setDefaultFeeDivisor\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"oldDivisor\",\"type\":\"uint256\"}],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"token\",\"type\":\"address\"},{\"internalType\":\"uint256\",\"name\":\"_feeDivisor\",\"type\":\"uint256\"}],\"name\":\"setFeeDivisor\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"oldDivisor\",\"type\":\"uint256\"}],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"_operator\",\"type\":\"address\"}],\"name\":\"setOperator\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"}],\"devdoc\":{\"kind\":\"dev\",\"methods\":{\"constructor\":{\"details\":\"construct\"},\"creationMultiplier(address)\":{\"details\":\"Get the fee divisor for the specified token\"},\"defaultCreationMultiplier()\":{\"details\":\"Get the fee divisor for the specified token\"},\"defaultFeeDivisor()\":{\"details\":\"Get the fee divisor for the specified token\"},\"feeDivisor(address)\":{\"details\":\"Get the fee divisor for the specified token\"},\"setCreationMultiplier(address,uint256)\":{\"details\":\"Set the fee divisor for the specified token\"},\"setDefaultCreationMultiplier(uint256)\":{\"details\":\"Set the fee divisor for the specified token\"},\"setDefaultFeeDivisor(uint256)\":{\"details\":\"Set the fee divisor for the specified token\"},\"setFeeDivisor(address,uint256)\":{\"details\":\"Set the fee divisor for the specified token\"},\"setOperator(address)\":{\"details\":\"Set the address allowed to mint and burn\"}},\"version\":1},\"userdoc\":{\"kind\":\"user\",\"methods\":{},\"version\":1}},\"settings\":{\"compilationTarget\":{\"src/utils/QuantizedFeeTracker.sol\":\"QuantizedFeeTracker\"},\"evmVersion\":\"istanbul\",\"libraries\":{},\"metadata\":{\"bytecodeHash\":\"ipfs\",\"useLiteralContent\":true},\"optimizer\":{\"enabled\":true,\"runs\":1},\"remappings\":[]},\"sources\":{\"src/utils/QuantizedFeeTracker.sol\":{\"content\":\"// SPDX-License-Identifier: MIT\\npragma solidity >=0.7.0;\\n\\ncontract QuantizedFeeTracker {\\n    address private operator;\\n\\n    uint256 private constant CREATION_MULTIPLIER = 50;\\n    uint256 private constant FEE_DIVISOR = 1000;\\n\\n    uint256 private _defaultCreationMultiplier;\\n    uint256 private _defaultFeeDivisor;\\n\\n    mapping(address => uint256) private creationMultipliers;\\n    mapping(address => uint256) private feeDivisors;\\n\\n    event DefaultCreationMultiplierChanged(address indexed operator, uint256 oldValue, uint256 value);\\n    event DefaultFeeDivisorChanged(address indexed operator, uint256 oldValue, uint256 value);\\n\\n    event CreationMultiplierChanged(address indexed operator, address indexed token, uint256 oldValue, uint256 value);\\n    event FeeDivisorChanged(address indexed operator, address indexed token, uint256 oldValue, uint256 value);\\n\\n    /**\\n     * @dev Set the address allowed to mint and burn\\n     */\\n    function setOperator(address _operator) external {\\n        require(operator == address(0), \\\"IMMUTABLE\\\");\\n        operator = _operator;\\n    }\\n\\n    /**\\n     * @dev construct\\n     */\\n    constructor() {}\\n\\n    /**\\n     * @dev Get the fee divisor for the specified token\\n     */\\n    function creationMultiplier(address token) public view returns (uint256 multiplier) {\\n        multiplier = creationMultipliers[token];\\n        multiplier = multiplier == 0 ? CREATION_MULTIPLIER : multiplier;\\n    }\\n\\n    /**\\n     * @dev Get the fee divisor for the specified token\\n     */\\n    function defaultCreationMultiplier() public view returns (uint256 multiplier) {\\n        return _defaultCreationMultiplier;\\n    }\\n\\n    /**\\n     * @dev Get the fee divisor for the specified token\\n     */\\n    function feeDivisor(address token) public view returns (uint256 divisor) {\\n        divisor = feeDivisors[token];\\n        divisor = divisor == 0 ? FEE_DIVISOR : divisor;\\n    }\\n\\n    /**\\n     * @dev Get the fee divisor for the specified token\\n     */\\n    function defaultFeeDivisor() public view returns (uint256 multiplier) {\\n        return _defaultFeeDivisor;\\n    }\\n\\n    /**\\n     * @dev Set the fee divisor for the specified token\\n     */\\n    function setDefaultFeeDivisor(uint256 _feeDivisor) public returns (uint256 oldDivisor) {\\n        require(operator == msg.sender, \\\"UNAUTHORIZED\\\");\\n        require(_feeDivisor != 0, \\\"DIVISIONBYZERO\\\");\\n        oldDivisor = _defaultFeeDivisor;\\n        _defaultFeeDivisor = _feeDivisor;\\n        emit DefaultFeeDivisorChanged(operator, oldDivisor, _defaultFeeDivisor);\\n    }\\n\\n    /**\\n     * @dev Set the fee divisor for the specified token\\n     */\\n    function setFeeDivisor(address token, uint256 _feeDivisor) public returns (uint256 oldDivisor) {\\n        require(operator == msg.sender, \\\"UNAUTHORIZED\\\");\\n        require(_feeDivisor != 0, \\\"DIVISIONBYZERO\\\");\\n        oldDivisor = feeDivisors[token];\\n        feeDivisors[token] = _feeDivisor;\\n        emit FeeDivisorChanged(operator, token, oldDivisor, _feeDivisor);\\n    }\\n\\n    /**\\n     * @dev Set the fee divisor for the specified token\\n     */\\n    function setDefaultCreationMultiplier(uint256 _multiplier) public returns (uint256 oldMultiplier) {\\n        require(operator == msg.sender, \\\"UNAUTHORIZED\\\");\\n        oldMultiplier = _defaultCreationMultiplier;\\n        _defaultCreationMultiplier = _multiplier;\\n        emit DefaultCreationMultiplierChanged(operator, oldMultiplier, _defaultCreationMultiplier);\\n    }\\n\\n    /**\\n     * @dev Set the fee divisor for the specified token\\n     */\\n    function setCreationMultiplier(address token, uint256 _multiplier) public returns (uint256 oldMultiplier) {\\n        require(operator == msg.sender, \\\"UNAUTHORIZED\\\");\\n        oldMultiplier = creationMultipliers[token];\\n        creationMultipliers[token] = oldMultiplier;\\n        emit CreationMultiplierChanged(operator, token, oldMultiplier, _multiplier);\\n    }\\n}\\n\",\"keccak256\":\"0x3d13bfb7f75e2a659e5f55799a1d2aaede79ebd6d5b42b2bc3054978886cfe27\",\"license\":\"MIT\"}},\"version\":1}",
+  "bytecode": "0x608060405234801561001057600080fd5b506105f3806100206000396000f3fe608060405234801561001057600080fd5b50600436106100835760003560e01c80630415c9f4146100885780631a7260bc146100b757806343a89328146100bf57806361e20da5146100eb578063a51834ff14610108578063b3ab15fb14610134578063c52111541461015c578063eee1ad8014610164578063f945c0691461018a575b600080fd5b6100a56004803603602081101561009e57600080fd5b50356101b0565b60408051918252519081900360200190f35b6100a561029a565b6100a5600480360360408110156100d557600080fd5b506001600160a01b0381351690602001356102a0565b6100a56004803603602081101561010157600080fd5b5035610350565b6100a56004803603604081101561011e57600080fd5b506001600160a01b0381351690602001356103f7565b61015a6004803603602081101561014a57600080fd5b50356001600160a01b03166104ef565b005b6100a561055b565b6100a56004803603602081101561017a57600080fd5b50356001600160a01b0316610561565b6100a5600480360360208110156101a057600080fd5b50356001600160a01b0316610590565b600080546001600160a01b031633146101ff576040805162461bcd60e51b815260206004820152600c60248201526b15539055551213d49256915160a21b604482015290519081900360640190fd5b81610242576040805162461bcd60e51b815260206004820152600e60248201526d4449564953494f4e42595a45524f60901b604482015290519081900360640190fd5b506002805490829055600054604080518381526020810185905281516001600160a01b03909316927f50d2fd3a15ffe0a5547c68d91dc96339c386f8a7d180a1f8cb782d39cfed38af929181900390910190a2919050565b60015490565b600080546001600160a01b031633146102ef576040805162461bcd60e51b815260206004820152600c60248201526b15539055551213d49256915160a21b604482015290519081900360640190fd5b506001600160a01b03808316600081815260036020908152604080832054925481518481529283018790528151939516927f25807f8ef1a6f2f224473eaeaf9b00e940f4d4855c13bad7d1297e7303e8840b9281900390910190a392915050565b600080546001600160a01b0316331461039f576040805162461bcd60e51b815260206004820152600c60248201526b15539055551213d49256915160a21b604482015290519081900360640190fd5b506001805490829055600054604080518381526020810185905281516001600160a01b03909316927fa16dd47ba745896022e7a28bbfee347b83174387f5e3443e1f474eda0feb1892929181900390910190a2919050565b600080546001600160a01b03163314610446576040805162461bcd60e51b815260206004820152600c60248201526b15539055551213d49256915160a21b604482015290519081900360640190fd5b81610489576040805162461bcd60e51b815260206004820152600e60248201526d4449564953494f4e42595a45524f60901b604482015290519081900360640190fd5b506001600160a01b038083166000818152600460209081526040808320805490879055925481518481529283018790528151939516927f8f604bc5c2d1916032a90c8f4d7cdc0dff78f1ba11119344f3fe46ddea1795449281900390910190a392915050565b6000546001600160a01b031615610539576040805162461bcd60e51b8152602060048201526009602482015268494d4d555441424c4560b81b604482015290519081900360640190fd5b600080546001600160a01b0319166001600160a01b0392909216919091179055565b60025490565b6001600160a01b0381166000908152600460205260409020548015610586578061058a565b6103e85b92915050565b6001600160a01b03811660009081526003602052604090205480156105b5578061058a565b60329291505056fea26469706673582212204fadc245d918d9c55109932fae920c800571a1cfad1cb49256badf12535d23bf64736f6c63430007030033",
+  "deployedBytecode": "0x608060405234801561001057600080fd5b50600436106100835760003560e01c80630415c9f4146100885780631a7260bc146100b757806343a89328146100bf57806361e20da5146100eb578063a51834ff14610108578063b3ab15fb14610134578063c52111541461015c578063eee1ad8014610164578063f945c0691461018a575b600080fd5b6100a56004803603602081101561009e57600080fd5b50356101b0565b60408051918252519081900360200190f35b6100a561029a565b6100a5600480360360408110156100d557600080fd5b506001600160a01b0381351690602001356102a0565b6100a56004803603602081101561010157600080fd5b5035610350565b6100a56004803603604081101561011e57600080fd5b506001600160a01b0381351690602001356103f7565b61015a6004803603602081101561014a57600080fd5b50356001600160a01b03166104ef565b005b6100a561055b565b6100a56004803603602081101561017a57600080fd5b50356001600160a01b0316610561565b6100a5600480360360208110156101a057600080fd5b50356001600160a01b0316610590565b600080546001600160a01b031633146101ff576040805162461bcd60e51b815260206004820152600c60248201526b15539055551213d49256915160a21b604482015290519081900360640190fd5b81610242576040805162461bcd60e51b815260206004820152600e60248201526d4449564953494f4e42595a45524f60901b604482015290519081900360640190fd5b506002805490829055600054604080518381526020810185905281516001600160a01b03909316927f50d2fd3a15ffe0a5547c68d91dc96339c386f8a7d180a1f8cb782d39cfed38af929181900390910190a2919050565b60015490565b600080546001600160a01b031633146102ef576040805162461bcd60e51b815260206004820152600c60248201526b15539055551213d49256915160a21b604482015290519081900360640190fd5b506001600160a01b03808316600081815260036020908152604080832054925481518481529283018790528151939516927f25807f8ef1a6f2f224473eaeaf9b00e940f4d4855c13bad7d1297e7303e8840b9281900390910190a392915050565b600080546001600160a01b0316331461039f576040805162461bcd60e51b815260206004820152600c60248201526b15539055551213d49256915160a21b604482015290519081900360640190fd5b506001805490829055600054604080518381526020810185905281516001600160a01b03909316927fa16dd47ba745896022e7a28bbfee347b83174387f5e3443e1f474eda0feb1892929181900390910190a2919050565b600080546001600160a01b03163314610446576040805162461bcd60e51b815260206004820152600c60248201526b15539055551213d49256915160a21b604482015290519081900360640190fd5b81610489576040805162461bcd60e51b815260206004820152600e60248201526d4449564953494f4e42595a45524f60901b604482015290519081900360640190fd5b506001600160a01b038083166000818152600460209081526040808320805490879055925481518481529283018790528151939516927f8f604bc5c2d1916032a90c8f4d7cdc0dff78f1ba11119344f3fe46ddea1795449281900390910190a392915050565b6000546001600160a01b031615610539576040805162461bcd60e51b8152602060048201526009602482015268494d4d555441424c4560b81b604482015290519081900360640190fd5b600080546001600160a01b0319166001600160a01b0392909216919091179055565b60025490565b6001600160a01b0381166000908152600460205260409020548015610586578061058a565b6103e85b92915050565b6001600160a01b03811660009081526003602052604090205480156105b5578061058a565b60329291505056fea26469706673582212204fadc245d918d9c55109932fae920c800571a1cfad1cb49256badf12535d23bf64736f6c63430007030033",
+  "devdoc": {
+    "kind": "dev",
+    "methods": {
+      "constructor": {
+        "details": "construct"
+      },
+      "creationMultiplier(address)": {
+        "details": "Get the fee divisor for the specified token"
+      },
+      "defaultCreationMultiplier()": {
+        "details": "Get the fee divisor for the specified token"
+      },
+      "defaultFeeDivisor()": {
+        "details": "Get the fee divisor for the specified token"
+      },
+      "feeDivisor(address)": {
+        "details": "Get the fee divisor for the specified token"
+      },
+      "setCreationMultiplier(address,uint256)": {
+        "details": "Set the fee divisor for the specified token"
+      },
+      "setDefaultCreationMultiplier(uint256)": {
+        "details": "Set the fee divisor for the specified token"
+      },
+      "setDefaultFeeDivisor(uint256)": {
+        "details": "Set the fee divisor for the specified token"
+      },
+      "setFeeDivisor(address,uint256)": {
+        "details": "Set the fee divisor for the specified token"
+      },
+      "setOperator(address)": {
+        "details": "Set the address allowed to mint and burn"
+      }
+    },
+    "version": 1
+  },
+  "userdoc": {
+    "kind": "user",
+    "methods": {},
+    "version": 1
+  },
+  "storageLayout": {
+    "storage": [
+      {
+        "astId": 14545,
+        "contract": "src/utils/QuantizedFeeTracker.sol:QuantizedFeeTracker",
+        "label": "operator",
+        "offset": 0,
+        "slot": "0",
+        "type": "t_address"
+      },
+      {
+        "astId": 14553,
+        "contract": "src/utils/QuantizedFeeTracker.sol:QuantizedFeeTracker",
+        "label": "_defaultCreationMultiplier",
+        "offset": 0,
+        "slot": "1",
+        "type": "t_uint256"
+      },
+      {
+        "astId": 14555,
+        "contract": "src/utils/QuantizedFeeTracker.sol:QuantizedFeeTracker",
+        "label": "_defaultFeeDivisor",
+        "offset": 0,
+        "slot": "2",
+        "type": "t_uint256"
+      },
+      {
+        "astId": 14559,
+        "contract": "src/utils/QuantizedFeeTracker.sol:QuantizedFeeTracker",
+        "label": "creationMultipliers",
+        "offset": 0,
+        "slot": "3",
+        "type": "t_mapping(t_address,t_uint256)"
+      },
+      {
+        "astId": 14563,
+        "contract": "src/utils/QuantizedFeeTracker.sol:QuantizedFeeTracker",
+        "label": "feeDivisors",
+        "offset": 0,
+        "slot": "4",
+        "type": "t_mapping(t_address,t_uint256)"
+      }
+    ],
+    "types": {
+      "t_address": {
+        "encoding": "inplace",
+        "label": "address",
+        "numberOfBytes": "20"
+      },
+      "t_mapping(t_address,t_uint256)": {
+        "encoding": "mapping",
+        "key": "t_address",
+        "label": "mapping(address => uint256)",
+        "numberOfBytes": "32",
+        "value": "t_uint256"
+      },
+      "t_uint256": {
+        "encoding": "inplace",
+        "label": "uint256",
+        "numberOfBytes": "32"
+      }
+    }
+  }
+}

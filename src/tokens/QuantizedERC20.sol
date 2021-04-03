@@ -13,14 +13,20 @@ contract QuantizedERC20 is IQuantizedERC20, IERC20 {
     mapping(address => mapping(address => uint256)) private _allowance;
 
     address private quantized;
+    address private erc1155token;
     address private erc20token;
 
     constructor() {}
 
     // called once by the factory at time of deployment
-    function initialize(address _quantized, address _erc20token) external override {
-        require(msg.sender == quantized, "Quantized: FORBIDDEN"); // sufficient check
+    function initialize(
+        address _quantized,
+        address _erc1155token,
+        address _erc20token
+    ) external override {
+        require(address(0) == quantized, "Quantized: FORBIDDEN"); // sufficient check
         quantized = _quantized;
+        erc1155token = _erc1155token;
         erc20token = _erc20token;
     }
 
@@ -49,7 +55,7 @@ contract QuantizedERC20 is IQuantizedERC20, IERC20 {
     }
 
     function balanceOf(address owner) external view override returns (uint256 bal) {
-        (bal) = IERC1155(quantized).balanceOf(owner, uint256(erc20token));
+        (bal) = IERC1155(erc1155token).balanceOf(owner, uint256(erc20token));
     }
 
     function _approve(
@@ -63,7 +69,7 @@ contract QuantizedERC20 is IQuantizedERC20, IERC20 {
 
     function approve(address spender, uint256 value) external override returns (bool) {
         _approve(msg.sender, spender, value);
-        IERC1155(quantized).setApprovalForAll(spender, true);
+        IERC1155(erc1155token).setApprovalForAll(spender, true);
         return true;
     }
 
@@ -107,7 +113,7 @@ contract QuantizedERC20 is IQuantizedERC20, IERC20 {
         uint256[] memory amounts
     ) external override {
         require(to != address(0), "ZERO_DESTINATION");
-        IERC1155(quantized).safeBatchTransferFrom(from, to, tokens, amounts, "0x0");
+        IERC1155(erc1155token).safeBatchTransferFrom(from, to, tokens, amounts, "0x0");
     }
 
     function _transfer(
@@ -118,7 +124,7 @@ contract QuantizedERC20 is IQuantizedERC20, IERC20 {
         if (_allowance[from][msg.sender] != uint256(-1)) {
             _allowance[from][msg.sender] = _allowance[from][msg.sender].sub(value);
         }
-        IERC1155(quantized).safeTransferFrom(from, to, uint256(erc20token), value, "0x0");
+        IERC1155(erc1155token).safeTransferFrom(from, to, uint256(erc20token), value, "0x0");
         emit Transfer(from, to, value);
     }
 }

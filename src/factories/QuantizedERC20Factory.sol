@@ -3,10 +3,14 @@ pragma solidity >=0.7.0;
 
 import "../tokens/QuantizedERC20.sol";
 
+import "hardhat/console.sol";
+
 contract QuantizedERC20Factory {
+    address private operator;
+
     mapping(address => address) private _getQuantized;
     mapping(address => address) private _getQuantizedSource;
-    address[] private allQuantized;
+    address[] private _allQuantized;
 
     /**
      * @dev emitted when a new quantized token has been added to the system
@@ -18,6 +22,14 @@ contract QuantizedERC20Factory {
      */
     constructor() {
         //
+    }
+
+    /**
+     * @dev Set the address allowed to mint and burn
+     */
+    function setOperator(address _operator) external {
+        require(operator == address(0), "IMMUTABLE");
+        operator = _operator;
     }
 
     /**
@@ -35,10 +47,17 @@ contract QuantizedERC20Factory {
     }
 
     /**
+     * @dev get the quantized token for this
+     */
+    function allQuantized(uint256 idx) public view returns (address quantizedToken) {
+        quantizedToken = _allQuantized[idx];
+    }
+
+    /**
      * @dev number of quantized addresses
      */
     function allQuantizedLength() public view returns (uint256) {
-        return allQuantized.length;
+        return _allQuantized.length;
     }
 
     /**
@@ -49,18 +68,27 @@ contract QuantizedERC20Factory {
         address multiToken,
         uint256 tokenHash
     ) public returns (address quantizedToken) {
+        require(msg.sender == operator, "UNAUTHORIZED"); // only the operator may create new ERC20 tokens
         require(_getQuantizedSource[address(tokenHash)] == address(0), "TOKEN_EXISTS"); // single check is sufficient
         require(_getQuantized[address(tokenHash)] == address(0), "TOKEN_EXISTS"); // single check is sufficient
 
-        bytes32 salt = keccak256(abi.encodePacked(owner, tokenHash));
+        // create the quantized erc20 token using create2, which lets us determine the
+        // quantized erc20 address of a token without interacting with the contract itself
+        bytes32 salt = keccak256(abi.encodePacked(owner, multiToken, tokenHash));
         bytes memory bytecode = type(QuantizedERC20).creationCode;
         assembly {
             quantizedToken := create2(0, add(bytecode, 32), mload(bytecode), salt)
         }
-        QuantizedERC20(quantizedToken).initialize(owner, multiToken);
+
+        // initialize the erc20 contract with the relevant addresses which it proxies
+        QuantizedERC20(quantizedToken).initialize(owner, multiToken, address(tokenHash));
+
+        console.log("createQuantized", tokenHash, quantizedToken);
+
+        // insert the erc20 contract address into lists - one that maps source to quantized,
         _getQuantized[address(tokenHash)] = quantizedToken;
         _getQuantizedSource[quantizedToken] = address(tokenHash);
-        allQuantized.push(quantizedToken);
-        emit QuantizedCreated(address(tokenHash), quantizedToken, allQuantized.length);
+        _allQuantized.push(quantizedToken);
+        emit QuantizedCreated(address(tokenHash), quantizedToken, _allQuantized.length);
     }
 }
